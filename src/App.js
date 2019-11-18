@@ -1,83 +1,85 @@
-import React, { Component, Fragment } from 'react';
-import './App.css';
+function Square(props) {
+    return (
+      <button className="square"
+        onClick={props.onClick}>
+        {props.value}
+        
+      </button>
+    );
+  }
 
-class App extends Component {
-  constructor() {
-    super();
+
+class Board extends React.Component {
+  constructor(props) {
+    super(props);
     this.state = {
-      text: `
-      {"0": 
-      [{"id": 10,
-        "title": "House",
-        "level": 0,
-        "children": [],
-        "parent_id": null}],
-     "1": 
-      [{"id": 12,
-        "title": "Red Roof",
-        "level": 1,
-        "children": [],
-        "parent_id": 10},
-       {"id": 18,
-        "title": "Blue Roof",
-        "level": 1,
-        "children": [],
-        "parent_id": 10},
-       {"id": 13,
-        "title": "Wall",
-        "level": 1,
-        "children": [],
-        "parent_id": 10}],
-     "2": 
-      [{"id": 17,
-        "title": "Blue Window",
-        "level": 2,
-        "children": [],
-        "parent_id": 12},
-       {"id": 16,
-        "title": "Door",
-        "level": 2,
-        "children": [],
-        "parent_id": 13},
-       {"id": 15,
-        "title": "Red Window",
-        "level": 2,
-        "children": [],
-        "parent_id": 12}]}
-      `
+      squares: Array(9).fill(null),
+      xIsNext: true,
     };
   }
-
   
-
-  onChange(event) {
-    this.setState({
-      [event.target.name]: event.target.value
-    });
+  handleClick(i) {
+    const squares = this.state.squares.slice();
+    squares[i] = this.state.xIsNext ? 'X' : 'O';
+    this.setState({squares: squares,
+                  xIsNext: !this.state.xIsNext,
+                  });
   }
   
-  render() {
-    const { text } = this.state;
-  
+  renderSquare(i) {
     return (
-      <Fragment>
-        <div className="work-area">
-          <div className="container">
-            <div className="row">
-              <div className="col-md-6">
-                <h2 className="editable">Input (editable field)</h2>
-                <textarea rows="30" cols="60" onChange={this.onChange.bind(this)} name="text" value={text} />
-              </div>
-              <div className="col-md-6">
-                <h2 className="non-editable">Output</h2>
-                <textarea rows="30" cols="60" readOnly value={text} />
-              </div>
-            </div>
-          </div>
+      <Square value={this.state.squares[i]}
+              onClick={() => this.handleClick(i)}
+        
+        />
+      );
+  }
+
+  render() {
+    const status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+
+    return (
+      <div>
+        <div className="status">{status}</div>
+        <div className="board-row">
+          {this.renderSquare(0)}
+          {this.renderSquare(1)}
+          {this.renderSquare(2)}
         </div>
-      </Fragment>
+        <div className="board-row">
+          {this.renderSquare(3)}
+          {this.renderSquare(4)}
+          {this.renderSquare(5)}
+        </div>
+        <div className="board-row">
+          {this.renderSquare(6)}
+          {this.renderSquare(7)}
+          {this.renderSquare(8)}
+        </div>
+      </div>
     );
   }
 }
 
-export default App;
+class Game extends React.Component {
+  render() {
+    return (
+      <div className="game">
+        <div className="game-board">
+          <Board />
+        </div>
+        <div className="game-info">
+          <div>{/* status */}</div>
+          <ol>{/* TODO */}</ol>
+        </div>
+      </div>
+    );
+  }
+}
+
+// ========================================
+
+ReactDOM.render(
+  <Game />,
+  document.getElementById('root')
+);
